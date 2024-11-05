@@ -2,6 +2,7 @@ services:
 
   db:
     image: postgres:12
+    container_name: ${COMPOSE_PROJECT_NAME}-db
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
@@ -21,6 +22,7 @@ services:
 
   adminer:
     image: adminer
+    container_name: ${COMPOSE_PROJECT_NAME}-adminer
     restart: always
     networks:
       - traefik-public
@@ -32,6 +34,7 @@ services:
 
   prestart:
     image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
+    container_name: ${COMPOSE_PROJECT_NAME}-prestart
     build:
       context: ./
     networks:
@@ -63,8 +66,9 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
       - SENTRY_DSN=${SENTRY_DSN}
 
-  backend:
+  api:
     image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
+    container_name: ${COMPOSE_PROJECT_NAME}-api
     restart: always
     networks:
       - traefik-public
