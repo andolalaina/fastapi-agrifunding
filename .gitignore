@@ -7,3 +7,5 @@ htmlcov
 .cache
 .venv
 .vscode
+.private-key.json
+.env

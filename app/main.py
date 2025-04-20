@@ -1,4 +1,5 @@
 import sentry_sdk
+import ee
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
 from starlette.middleware.cors import CORSMiddleware
@@ -10,6 +11,16 @@ from app.core.config import settings
 def custom_generate_unique_id(route: APIRoute) -> str:
     return f"{route.tags[0]}-{route.name}"
 
+service_account = settings.GEE_SERVICE_ACCOUNT_EMAIL
+service_account_key_json = (
+    settings.GEE_SERVICE_ACCOUNT_KEY_JSON
+)
+
+credentials = ee.ServiceAccountCredentials(
+    service_account, key_file=service_account_key_json
+)
+ee.Initialize(credentials)
+ee.data.setWorkloadTag("m2")
 
 if settings.SENTRY_DSN and settings.ENVIRONMENT != "local":
     sentry_sdk.init(dsn=str(settings.SENTRY_DSN), enable_tracing=True)

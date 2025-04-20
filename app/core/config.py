@@ -68,6 +68,9 @@ class Settings(BaseSettings):
             path=self.POSTGRES_DB,
         )
 
+    GEE_SERVICE_ACCOUNT_EMAIL: str
+    GEE_SERVICE_ACCOUNT_KEY_JSON: str
+
     SMTP_TLS: bool = True
     SMTP_SSL: bool = False
     SMTP_PORT: int = 587

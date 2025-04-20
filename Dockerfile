@@ -33,6 +33,8 @@ COPY ./pyproject.toml ./uv.lock ./alembic.ini /agrifunding-backend/
 
 COPY ./app /agrifunding-backend/app
 
+COPY ./${GEE_PRIVATE_KEY_FILE} /agrifunding-backend/${GEE_PRIVATE_KEY_FILE}
+
 # Sync the project
 # Ref: https://docs.astral.sh/uv/guides/integration/docker/#intermediate-layers
 RUN --mount=type=cache,target=/root/.cache/uv \
