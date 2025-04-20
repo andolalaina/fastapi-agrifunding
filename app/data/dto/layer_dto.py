@@ -8,3 +8,4 @@ class LayerRequestDto(BaseModel):
 class LayerResponseDto(BaseModel):
     layer_url: str
     statistics: dict
+    viz_params: dict

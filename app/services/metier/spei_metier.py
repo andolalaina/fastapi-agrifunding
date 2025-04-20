@@ -18,12 +18,12 @@ def get_precipitation_drought_index_tile_url(roi: ee.Geometry) -> str:
         "min": -2.33,
         "max":  2.33,
         "palette": [
-            '8b1a1a', 'de2929', 'f3641d',
-            'fdc404', '9afa94', '03f2fd',
-            '12adf3', '1771de', '00008b',
+            '#8b1a1a', '#de2929', '#f3641d',
+            '#fdc404', '#9afa94', '#03f2fd',
+            '#12adf3', '#1771de', '#00008b',
         ]
     }
-    return gee_tech.get_image_layer(dataset, viz_params, roi)
+    return gee_tech.get_image_layer(dataset, viz_params, roi), viz_params
 
 def get_precipitation_drought_index_statistics(roi: ee.Geometry) -> dict:
     """
