@@ -40,4 +40,6 @@ COPY ./${GEE_PRIVATE_KEY_FILE} /agrifunding-backend/${GEE_PRIVATE_KEY_FILE}
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync
 
+COPY ./mcp /agrifunding-backend/mcp
+
 CMD ["fastapi", "run", "--workers", "4", "app/main.py"]

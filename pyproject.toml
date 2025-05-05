@@ -23,6 +23,8 @@ dependencies = [
     "pyjwt<3.0.0,>=2.8.0",
     "earthengine-api>=1.5.11",
     "geojson-pydantic>=1.2.0",
+    "google-genai>=1.13.0",
+    "fastmcp>=2.2.8",
 ]
 
 [tool.uv]

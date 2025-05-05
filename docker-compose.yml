@@ -63,6 +63,9 @@ services:
     env_file:
       - .env
 
+    volumes:
+      - ./mcp:/agrifunding-backend/mcp
+
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/utils/health-check/"]
       interval: 120s
