@@ -4,8 +4,10 @@ from typing import Any
 from fastapi import APIRouter, HTTPException
 from sqlmodel import func, select
 
+from app import crud
 from app.api.deps import CurrentUser, SessionDep
-from app.models import Item, ItemCreate, ItemPublic, ItemsPublic, ItemUpdate, Message
+from app.data.dto.item_dto import ItemDetailDTO
+from app.models import Item, ItemCreate, ItemPublic, ItemsPublic, ItemUpdate, Message, User
 
 router = APIRouter()
 
@@ -18,30 +20,30 @@ def read_items(
     Retrieve items.
     """
 
-    if current_user.is_superuser:
-        count_statement = select(func.count()).select_from(Item)
-        count = session.exec(count_statement).one()
-        statement = select(Item).offset(skip).limit(limit)
-        items = session.exec(statement).all()
-    else:
-        count_statement = (
-            select(func.count())
-            .select_from(Item)
-            .where(Item.owner_id == current_user.id)
-        )
-        count = session.exec(count_statement).one()
-        statement = (
-            select(Item)
-            .where(Item.owner_id == current_user.id)
-            .offset(skip)
-            .limit(limit)
-        )
-        items = session.exec(statement).all()
+    # if current_user.is_superuser:
+    count_statement = select(func.count()).select_from(Item)
+    count = session.exec(count_statement).one()
+    statement = select(Item).offset(skip).limit(limit)
+    items = session.exec(statement).all()
+    # else:
+    #     count_statement = (
+    #         select(func.count())
+    #         .select_from(Item)
+    #         .where(Item.owner_id == current_user.id)
+    #     )
+    #     count = session.exec(count_statement).one()
+    #     statement = (
+    #         select(Item)
+    #         .where(Item.owner_id == current_user.id)
+    #         .offset(skip)
+    #         .limit(limit)
+    #     )
+    #     items = session.exec(statement).all()
 
     return ItemsPublic(data=items, count=count)
 
 
-@router.get("/{id}", response_model=ItemPublic)
+@router.get("/{id}", response_model=ItemDetailDTO)
 def read_item(session: SessionDep, current_user: CurrentUser, id: uuid.UUID) -> Any:
     """
     Get item by ID.
@@ -51,7 +53,16 @@ def read_item(session: SessionDep, current_user: CurrentUser, id: uuid.UUID) -> 
         raise HTTPException(status_code=404, detail="Item not found")
     if not current_user.is_superuser and (item.owner_id != current_user.id):
         raise HTTPException(status_code=400, detail="Not enough permissions")
-    return item
+    data = item.model_dump()
+    owner = session.get(User, item.owner_id)
+    print(owner)
+    if owner:
+        data["owner_id"] = owner.id
+        data["owner_name"] = owner.full_name
+        data["owner_job"] = owner.job
+    else:
+        data["owner_id"] = None
+    return ItemDetailDTO(**data)
 
 
 @router.post("/", response_model=ItemPublic)

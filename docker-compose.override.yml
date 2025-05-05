@@ -23,13 +23,13 @@ services:
       - "app/main.py"
     develop:
       watch:
-        - path: ./backend
+        - path: ./app
           action: sync
           target: /app
           ignore:
-            - ./backend/.venv
+            - ./.venv
             - .venv
-        - path: ./backend/pyproject.toml
+        - path: ./pyproject.toml
           action: rebuild
     # TODO: remove once coverage is done locally
     volumes:

@@ -1,3 +1,4 @@
+from datetime import datetime
 import uuid
 
 from pydantic import EmailStr
@@ -10,6 +11,7 @@ class UserBase(SQLModel):
     is_active: bool = True
     is_superuser: bool = False
     full_name: str | None = Field(default=None, max_length=255)
+    job: str | None = Field(default=None, max_length=255)
 
 
 # Properties to receive via API on creation
@@ -52,7 +54,16 @@ class UsersPublic(SQLModel):
 # Shared properties
 class ItemBase(SQLModel):
     title: str = Field(min_length=1, max_length=255)
-    description: str | None = Field(default=None, max_length=255)
+    description: str | None = Field(default=None, max_length=1000)
+    rating: float | None = Field(default=None, ge=0, le=5)
+    summary: str | None = Field(default=None, max_length=500)
+    submission_date: datetime | None = Field(default=datetime.now())
+    target_date: datetime | None = Field(default=None)
+    fund_actual: float = Field(default=0, ge=0)
+    fund_target: float = Field(default=0, ge=0)
+    status: str = Field(default="Draft", max_length=50)
+    latitude: float | None = Field(default=None)
+    longitude: float | None = Field(default=None)
 
 
 # Properties to receive on item creation
