@@ -1,3 +1,4 @@
+import ee
 import uuid
 from fastapi import APIRouter, HTTPException
 from geojson_pydantic import Feature
@@ -26,48 +27,37 @@ async def get_ai_evaluation(session: SessionDep, item_id: uuid.UUID) -> dict:
     item = session.get(Item, item_id)
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
-    # item_geo_data = {
-    #     "type": "Feature",
-    #     "properties": {},
-    #     "geometry": {
-    #         "coordinates": [
-    #         item.longitude,
-    #         item.latitude
-    #         ],
-    #         "type": "Point"
-    #     }
-    # }
+    
     item_geo_data = {
-      "type": "Feature",
-      "properties": {},
-      "geometry": {
-        "coordinates": [
-          [
-            [
-              48.530741152546625,
-              -15.672368795927028
+        "type": "Feature",
+        "properties": {},
+        "geometry": {
+            "coordinates": [
+            item.longitude,
+            item.latitude
             ],
-            [
-              48.530741152546625,
-              -15.972315917326839
-            ],
-            [
-              48.951234100395624,
-              -15.972315917326839
-            ],
-            [
-              48.951234100395624,
-              -15.672368795927028
-            ],
-            [
-              48.530741152546625,
-              -15.672368795927028
-            ]
-          ]
-        ],
-        "type": "Polygon"
-      }
+            "type": "Point"
+        }
     }
+    service_account = settings.GEE_SERVICE_ACCOUNT_EMAIL
+    service_account_key_json = (
+        settings.GEE_SERVICE_ACCOUNT_KEY_JSON
+    )
+
+    credentials = ee.ServiceAccountCredentials(
+        service_account, key_file=service_account_key_json
+    )
+    ee.Initialize(credentials)
+    print(f"{'#' * 20}")
+    print("GEE INITIALIZED")
+    print(item)
+    item_geo_data = {
+        "type": "Feature",
+        "properties": {},
+        "geometry": ee.Geometry.Point([item.longitude, item.latitude]).buffer(10000).getInfo()
+    }
+    print(item_geo_data)
+    
     item_description = item.description
     item_title = item.title
     item_summary = item.summary
